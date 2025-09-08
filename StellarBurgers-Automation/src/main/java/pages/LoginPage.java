@@ -4,8 +4,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+import java.util.List;
 
 public class LoginPage {
+
+    private WebDriverWait wait;
+
     private static final String BASE_URL = "https://stellarburgers.nomoreparties.site/login";
 
     private final WebDriver driver;
@@ -28,9 +36,26 @@ public class LoginPage {
     @FindBy(xpath = "//h1[contains(@class, 'text_type_main-large')]")
     private WebElement title;
 
+    @FindBy(css = "a")
+    private List<WebElement> links;
+
     public LoginPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         PageFactory.initElements(driver, this);
+    }
+
+    public boolean waitForLoginPage() {
+        try {
+            wait.until(ExpectedConditions.urlToBe(BASE_URL));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isLoginPageOpen() {
+        return driver.getCurrentUrl().contains(BASE_URL);
     }
 
     public LoginPage open() {
@@ -61,4 +86,10 @@ public class LoginPage {
     public void clickForgotPassword() {
         forgotPasswordLink.click();
     }
+
+    public void clickLinkWithText(String text) {
+        links.stream().filter(l -> l.getText().equals(text)).findFirst()
+                .ifPresent(WebElement::click);
+    }
+
 }

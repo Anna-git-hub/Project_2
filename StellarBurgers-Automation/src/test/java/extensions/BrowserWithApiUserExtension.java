@@ -1,16 +1,14 @@
 package extensions;
 
 import clients.ApiClient;
-import com.github.javafaker.Faker;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestWatcher;
+import models.RegisterUserRequest;
+import org.junit.jupiter.api.extension.*;
 import org.openqa.selenium.WebDriver;
+import com.github.javafaker.Faker;
 
 import static driver.WebDriverCreator.createWebDriver;
 
-public class BrowserExtension implements BeforeEachCallback, AfterEachCallback, TestWatcher {
+public class BrowserWithApiUserExtension implements BeforeEachCallback, AfterEachCallback, TestWatcher {
 
     private WebDriver driver;
     private String accessToken;
@@ -21,14 +19,33 @@ public class BrowserExtension implements BeforeEachCallback, AfterEachCallback, 
 
     @Override
     public void beforeEach(ExtensionContext context) {
-        driver = createWebDriver();
         email = faker.internet().emailAddress();
         password = faker.internet().password();
+        String name = faker.name().firstName();
+
+        RegisterUserRequest userRequest = new RegisterUserRequest();
+        userRequest.setEmail(email);
+        userRequest.setPassword(password);
+        userRequest.setName(name);
+
+        var response = apiClient.register(userRequest);
+        accessToken = response.then().extract().path("accessToken");
+
+        driver = createWebDriver();
     }
 
     @Override
     public void afterEach(ExtensionContext context) {
         driver.quit();
+        if (accessToken != null) {
+            try {
+                apiClient.deleteUser(accessToken);
+                System.out.println("Пользователь удалён через API");
+            } catch (Exception e) {
+                System.err.println("Ошибка при удалении пользователя: " + e.getMessage());
+            }
+            accessToken = null;
+        }
     }
 
     @Override

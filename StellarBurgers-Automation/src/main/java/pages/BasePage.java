@@ -1,6 +1,5 @@
 package pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -11,7 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 
-public class ProfilePage {
+public class BasePage {
     private static final String BASE_URL = "https://stellarburgers.nomoreparties.site";
 
     private WebDriver driver;
@@ -32,7 +31,7 @@ public class ProfilePage {
     @FindBy(xpath = "//input[@name='Name']")
     private WebElement nameField;
 
-    public ProfilePage(WebDriver driver) {
+    public BasePage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         PageFactory.initElements(driver, this);
@@ -49,6 +48,11 @@ public class ProfilePage {
 
     public boolean isProfilePageOpen() {
         return driver.getCurrentUrl().contains(BASE_URL);
+    }
+
+    public void clickLinkByText(String text) {
+        headerLinks.stream().filter(l -> l.getText().equals(text)).findFirst()
+                .ifPresent(WebElement::click);
     }
 
     public void clickBtnByText(String text) {
@@ -69,7 +73,7 @@ public class ProfilePage {
         return nameField.getAttribute("value");
     }
 
-    public ProfilePage open() {
+    public BasePage open() {
         driver.get(BASE_URL);
         return this;
     }

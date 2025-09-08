@@ -1,3 +1,4 @@
+// pages/RegisterPage.java
 package pages;
 
 import org.openqa.selenium.WebDriver;
@@ -8,13 +9,13 @@ import org.openqa.selenium.support.PageFactory;
 public class RegisterPage {
     private WebDriver driver;
 
-    @FindBy(xpath = "//input[@name='name']")
+    @FindBy(xpath = "//label[text()='Имя']/following-sibling::input")
     private WebElement nameField;
 
-    @FindBy(xpath = "//input[@name='email']")
+    @FindBy(xpath = "//label[text()='Email']/following-sibling::input")
     private WebElement emailField;
 
-    @FindBy(xpath = "//input[@name='password']")
+    @FindBy(xpath = "//label[text()='Пароль']/following-sibling::input")
     private WebElement passwordField;
 
     @FindBy(xpath = "//button[text()='Зарегистрироваться']")
@@ -26,20 +27,26 @@ public class RegisterPage {
     @FindBy(linkText = "Войти")
     private WebElement loginLink;
 
+    @FindBy(xpath = "//h2[text()='Регистрация']")
+    private WebElement pageTitle;
+
     public RegisterPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
     }
 
     public void setName(String name) {
+        nameField.clear();
         nameField.sendKeys(name);
     }
 
     public void setEmail(String email) {
+        emailField.clear();
         emailField.sendKeys(email);
     }
 
     public void setPassword(String password) {
+        passwordField.clear();
         passwordField.sendKeys(password);
     }
 
@@ -47,11 +54,31 @@ public class RegisterPage {
         registerButton.click();
     }
 
+    public void clickLoginLink() {
+        loginLink.click();
+    }
+
     public boolean isPasswordErrorVisible() {
         return passwordError.isDisplayed();
     }
 
-    public void clickLogin() {
-        loginLink.click();
+    public boolean isPageTitleDisplayed() {
+        return pageTitle.isDisplayed();
+    }
+
+    public String getNameValue() {
+        return nameField.getAttribute("value");
+    }
+
+    public String getEmailValue() {
+        return emailField.getAttribute("value");
+    }
+
+    public String getPasswordValue() {
+        return passwordField.getAttribute("value");
+    }
+
+    public WebDriver getDriver() {
+        return driver;
     }
 }

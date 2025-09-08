@@ -10,22 +10,20 @@ import static java.time.Duration.ofSeconds;
 public class WebDriverCreator {
 
     public static WebDriver createWebDriver() {
-        WebDriver webDriver = createWebDriver(System.getProperty("browser"));
+        String browser = System.getProperty("browser", "chrome");
+        WebDriver webDriver = createWebDriver(browser);
         webDriver.manage().timeouts().implicitlyWait(ofSeconds(3));
         return webDriver;
     }
 
     private static WebDriver createWebDriver(String browser) {
-        if (browser == null) {
-            return createChromeDriver();
-        }
-
         switch (browser) {
             case "firefox":
                 return createFirefoxDriver();
             case "chrome":
-            default:
                 return createChromeDriver();
+            default:
+                throw new IllegalArgumentException("Неподдерживаемый браузер: " + browser);
         }
     }
 
