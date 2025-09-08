@@ -1,0 +1,7 @@
+test-chrome:
+  script:
+    - mvn test -Dbrowser=chrome
+
+test-firefox:
+  script:
+    - mvn test -Dbrowser=firefox
